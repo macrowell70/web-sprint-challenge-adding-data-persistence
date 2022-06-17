@@ -5,7 +5,9 @@ const Projects = require('./model');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-    res.json({ message: "GET project router "})
+    Projects.getProjects()
+        .then(project => res.json(project))
+        .catch(err => res.json(err.message))
 });
 
 router.post('/', (req, res) => {
