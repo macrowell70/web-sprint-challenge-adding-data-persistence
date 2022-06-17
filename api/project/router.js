@@ -11,7 +11,13 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    res.json({ message: "POST project router "})
+    Projects.createProject(req.body)
+        .then(project => res.json(project))
+        .catch(err => {
+            if (!req.body.project_name) {
+                res.status(400).json(err.message)
+            } else { res.json(err.message) }
+        })
 });
 
 

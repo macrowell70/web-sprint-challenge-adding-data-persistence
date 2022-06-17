@@ -1,33 +1,32 @@
 const db = require('../../data/dbConfig')
 
-const getProjects = async () => {
-    const result = await db('projects')
+const getProjects = async (project_id) => {
+    const result = !project_id ?
+    await db('projects')
+     : 
+    await db('projects').where({ project_id }).first()
 
-    const projects = result.map(project => {
-        if (project.project_completed == null) {
+    const projects = !project_id ?
+        result.map(project => {
             return {
                 project_id: project.project_id,
                 project_name: project.project_name,
                 project_description: project.project_description,
-                project_completed: false
+                project_completed: project.project_completed == null ? false : true
             }
-        }
-        else {
-            return {
-                project_id: project.project_id,
-                project_name: project.project_name,
-                project_description: project.project_description,
-                project_completed: true
+        }) : {
+                project_id: result.project_id,
+                project_name: result.project_name,
+                project_description: result.project_description,
+                project_completed: result.project_completed == null ? false : true
             }
-        }
-    })
 
     return projects
 }
 
 const createProject = async (project) => {
     const [project_id] = await db('projects').insert(project)
-    return getProjects().where({ project_id }).first()
+    return getProjects(project_id)
 }
 
 module.exports = {
